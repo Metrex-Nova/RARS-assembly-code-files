@@ -33,6 +33,41 @@ main:
 	
 	la a0, newline
 	li a7, 4
+
+
+
+Write a RISC-V program (RARS)  that compare 2 integers.
+.data 
+int_1: .word 10
+int_2: .word 20
+newline: .string "\n"
+msg1: .string "int1 is greater than int2"
+msg2: .string "int1 is equal to int2"
+msg3: .string "int1 is less than int2"
+.text
+.globl main
+main:
+	la t0, int_1
+	lw s0, 0(t0)
+	
+	la t1, int_2
+	lw s1, 0(t1)
+	
+	beq s0, s1, equal
+	blt s0, s1, less
+	la a0, msg1
+	j print
+equal:
+	la a0, msg2
+	j print
+less:
+	la a0, msg3
+print:
+	li a7, 4
+	ecall
+	
+	li a7, 10
+	ecall
 	ecall
 	
 	li a7, 10
