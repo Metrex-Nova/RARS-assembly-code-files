@@ -68,6 +68,44 @@ print:
 	
 	li a7, 10
 	ecall
+
+
+Q) compare 2 float values
+
+.data 
+float_1: .float 10
+float_2: .float 20
+newline: .string "\n"
+msg1: .string "float1 is greater than float2"
+msg2: .string "float1 is equal to float2"
+msg3: .string "float1 is less than float2"
+.text
+.globl main
+main:
+	la t0, float_1
+	flw fs0, 0(t0)
+	
+	la t1, float_2
+	flw fs1, 0(t1)
+	
+	li, s2, 1
+	feq.s t2, fs0, fs1
+	beq t2, s2, equal
+	flt.s t3, fs0, fs1
+	beq t3, s2, less
+	la a0, msg1
+	j print
+equal:
+	la a0, msg2
+	j print
+less:
+	la a0, msg3
+print:
+	li a7, 4
+	ecall
+	
+	li a7, 10
+	ecall
 	ecall
 	
 	li a7, 10
