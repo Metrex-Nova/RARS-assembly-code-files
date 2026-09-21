@@ -291,3 +291,66 @@ exit:
 	li a7, 10
 	ecall
 
+Q) linear search 
+
+# t0 --> index i
+# t1 --> count
+# t2 --> base address of arr
+# t3 --> flag 
+# t4 --> int 1
+# s0 --> offset
+# s1 --> current element
+# s2 --> float value to find
+
+.data 
+arr: .float 10.0, 20.0, 3.0, 50.0, 7.0
+float: .float 3.0
+newline: .string "\n"
+msg: .string "element found at index: "
+msg2: .string "element doesn't exist in the array."
+
+.text
+.globl main
+main:
+	li t0, 0
+	li t1, 5
+	li t4, 1
+	la t2, arr
+	la t3, float
+	flw fs2, 0(t3)
+loop:
+	bge t0, t1, not_found
+	slli s0, t0, 2
+	
+	add s1, s0, t2
+	flw fs1, 0(s1)
+	
+	feq.s t3, fs1, fs2
+	beq t3, t4, found
+	addi t0, t0, 1
+	j loop
+found:
+	la a0, msg
+	li a7, 4
+	ecall
+	
+	mv a0, t0
+	li a7, 1
+	ecall
+	
+	la a0, newline
+	li a7, 4
+	ecall
+	
+	j exit
+
+not_found: 
+	la a0, msg2
+	li a7, 4
+	ecall
+	
+exit:
+	
+	li a7, 10
+	ecall
+
