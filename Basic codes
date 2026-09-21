@@ -143,3 +143,151 @@ exit:
 	
 	li a7, 10
 	ecall
+
+# t0 --> count of array elements
+# t1 --> index i
+# t3 --> int 1
+# t2 --> address of array
+# t4 --> flag for min
+# t5 --> flag for max
+# t6
+# s0 --> min
+# s1 --> sum
+# s2 --> max
+# s3 --> avg
+# s4 --> last element
+# s5 --> in loop to get current value
+
+
+.data 
+arr: .float 10.0, 20.0, 3.0, 50.0, 5.0
+newline: .string "\n"
+.text
+.globl main
+main:
+	li t0, 5
+	li t1, 1
+	li t3, 1
+	la t2, arr
+	flw fs1, 0(t2)
+	flw fs0, 0(t2)
+	flw fs2, 0(t2)
+loop:
+	bge t1, t0, print_min_max
+	slli s0, t1, 2
+	
+	add s1, s0, t2
+	flw fs5, 0(s1)
+	
+	fadd.s fs1, fs1, fs5
+	flt.s t4, fs5, fs0
+	beq t4, t3, new_min
+	flt.s t5, fs2, fs5
+	beq t5, t3, new_max
+	j next
+new_min:
+	fmv.s fs0, fs5
+	j next
+new_max:
+	fmv.s fs2, fs5
+	j next
+next:
+	addi t1, t1, 1
+	j loop
+print_min_max:
+
+	# avg calculation
+	fcvt.s.w ft0, t0
+	fdiv.s fs3, fs1, ft0
+
+	fmv.s fa0, fs0
+	li a7, 2
+	ecall
+	
+	la a0, newline
+	li a7, 4
+	ecall
+	
+	fmv.s fa0, fs2
+	li a7, 2
+	ecall
+	
+	la a0, newline
+	li a7, 4
+	ecall
+	
+	fmv.s fa0, fs1
+	li a7, 2
+	ecall
+	
+	la a0, newline
+	li a7, 4
+	ecall
+	
+	fmv.s fa0, fs3
+	li a7, 2
+	ecall
+	
+	la a0, newline
+	li a7, 4
+	ecall
+	
+	
+	li t1, 0
+print_loop:
+	bge t1, t0, last_loop_start
+	slli s0, t1, 2
+	
+	add s1, s0, t2
+	flw fs5, 0(s1)
+	
+	flt.s t4, fs3, fs5
+	beqz t4, next2
+	
+	fmv.s fa0, fs5
+	li a7, 2
+	ecall 
+	
+	la a0, newline
+	li a7, 4
+	ecall
+next2:
+	addi t1, t1, 1
+	j print_loop
+
+last_loop_start:
+	la a0, newline
+	li a7, 4
+	ecall
+	la a0, newline
+	li a7, 4
+	ecall
+	addi t6, t0, -1           
+	slli t6, t6, 2            
+	add  t6, t6, t2           
+	flw  fs4, 0(t6) 
+	li t1, 0
+last_loop:
+	bge t1, t0, exit
+	slli s0, t1, 2
+	add s1, s0, t2
+	flw fs5, 0(s1)
+
+	flt.s t4, fs4, fs5        # t4 = (last < arr[i])
+	beqz t4, next3
+
+	fmv.s fa0, fs5
+	li a7, 2
+	ecall
+
+	la a0, newline
+	li a7, 4
+	ecall
+next3:
+	addi t1, t1, 1
+	j last_loop
+	
+exit:
+	li a7, 10
+	ecall
+
